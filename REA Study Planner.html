@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RES Exam Weekday Study Calendar</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 24px;
+        }
+        .header-section {
+            background-color: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .date-info p {
+            margin: 8px 0;
+        }
+        .date-picker {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        .btn-success {
+            background-color: #16a34a;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+        .month-section {
+            margin-bottom: 32px;
+        }
+        .month-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4b5563;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
+        }
+        .study-day {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .study-day:hover {
+            background-color: #eff6ff;
+        }
+        .date-badge {
+            background-color: #dbeafe;
+            color: #1e40af;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-right: 12px;
+            min-width: 100px;
+            text-align: center;
+        }
+        .topic-info {
+            margin: 0 0 4px 0;
+            color: #1f2937;
+        }
+        .topic-info p {
+            margin: 4px 0 0 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .completed-checkbox {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #16a34a;
+        }
+        .completed-topic {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+        }
+        .completed-topic .topic-info h3 {
+            text-decoration: line-through;
+            color: #4b5563;
+        }
+        .completed-badge {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #16a34a;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 16px;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            margin: 32px auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #1f2937;
+        }
+        .modal-body {
+            padding: 16px;
+        }
+        .modal-body h3 {
+            margin-top: 0;
+            color: #2563eb;
+        }
+        .subtopics {
+            margin-top: 16px;
+        }
+        .subtopics h4 {
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+        .subtopics ul {
+            padding-left: 24px;
+        }
+        .subtopics li {
+            margin-bottom: 4px;
+            color: #6b7280;
+        }
+        .duration-info {
+            margin-top: 16px;
+            background-color: #eff6ff;
+            padding: 12px;
+            border-radius: 4px;
+            color: #1e40af;
+            font-weight: 500;
+        }
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        .close-btn:hover {
+            color: #1f2937;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+        }
+        @media (max-width: 640px) {
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .date-actions {
+                margin-top: 12px;
+                width: 100%;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RES Exam Weekday Study Calendar</h1>
+        
+        <div class="header-section">
+            <div class="date-info">
+                <p><span style="font-weight: 600;">Study Period:</span> <span id="start-date">May 1, 2025</span> to <span id="end-date">June 30, 2025</span></p>
+                <p><span style="font-weight: 600;">Study Days:</span> Monday to Friday (Weekdays only)</p>
+            </div>
+            <div class="date-actions">
+                <button class="btn btn-primary" id="change-date-btn">Change Start Date</button>
+                <div class="date-picker" id="date-picker" style="display: none;">
+                    <h3 style="font-size: 0.875rem; margin-top: 0; margin-bottom: 8px;">Select New Start Date:</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="date" id="new-date-input" class="date-input" style="padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;">
+                        <button class="btn btn-success" id="apply-date-btn">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="calendar-container">
+            <!-- Calendar content will be generated here -->
+        </div>
+        
+        <!-- Modal for detail view -->
+        <div class="modal" id="detail-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-date">May 1, 2025</h2>
+                    <button class="close-btn" id="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h3 id="modal-topic">Study Topic</h3>
+                    <p id="modal-details">Study description goes here</p>
+                    
+                    <div class="subtopics">
+                        <h4>Study Focus:</h4>
+                        <ul id="modal-subtopics">
+                            <!-- Subtopics will be inserted here -->
+                        </ul>
+                    </div>
+                    
+                    <div class="duration-info">
+                        <p id="modal-duration">Estimated Duration: 2 hours</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="modal-close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial dates setup
+        const today = new Date();
+        let startDate = new Date();
+        let endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + 2);
+        
+        // Load saved dates from localStorage if available
+        function loadSavedDates() {
+            const savedStartDate = localStorage.getItem('resExamStartDate');
+            if (savedStartDate) {
+                startDate = new Date(savedStartDate);
+                endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + 2);
+            }
+        }
+        
+        // Save dates to localStorage
+        function saveDates() {
+            localStorage.setItem('resExamStartDate', startDate.toISOString());
+        }
+        
+        // Load saved dates on page load
+        loadSavedDates();
+        
+        // Update the displayed dates
+        document.getElementById('start-date').textContent = formatDate(startDate, 'long');
+        document.getElementById('end-date').textContent = formatDate(endDate, 'long');
+        
+        // Set the default value for the date input
+        document.getElementById('new-date-input').value = formatDateISO(startDate);
+        
+        // Study schedule data
+        const studySchedule = [
+            // Week 1
+            {
+                "Paper 1: Unit 1 - Real Estate Market": {
+                    details: "Study real estate market characteristics, submarkets, and the role of government intervention.",
+                    subtopics: [
+                        "Real estate vs REITS and property stocks",
+                        "Characteristics of real estate market",
+                        "Categorization of properties",
+                        "Micro and macro factors affecting market"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 1 - Basic Land Law Concepts I": {
+                    details: "Focus on fundamental land law concepts and legal definitions.",
+                    subtopics: [
+                        "Real vs personal property",
+                        "Legal meaning of land",
+                        "Fixtures vs chattels",
+                        "Estates in land"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 1 - Basic Land Law Concepts II": {
+                    details: "Cover rights in land, State Lands Act, and registration of titles.",
+                    subtopics: [
+                        "State Lands Act provisions",
+                        "Temporary occupation licence",
+                        "Rights in another's land",
+                        "Easements and covenants"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 1 - Registration of Titles": {
+                    details: "Study the registration system and different property titles.",
+                    subtopics: [
+                        "Property types and title documents",
+                        "Registered dealings and priorities",
+                        "Effect of registration",
+                        "Function of caveats"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 1 - Review & Practice": {
+                    details: "Review first unit materials and attempt practice questions.",
+                    subtopics: [
+                        "Review real estate market concepts",
+                        "Review land law fundamentals",
+                        "Practice MCQs on Unit 1 topics",
+                        "Clarify any doubts from the week"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 2
+            {
+                "Paper 1: Unit 2 - Law of Contract I": {
+                    details: "Study essential elements of valid contracts in real estate.",
+                    subtopics: [
+                        "Offer and acceptance",
+                        "Form and consideration",
+                        "Capacity of parties",
+                        "Legality of object"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Law of Contract II": {
+                    details: "Continue with contract law focused on real estate transactions.",
+                    subtopics: [
+                        "Legal effects of contracts",
+                        "Warranties vs conditions",
+                        "Misrepresentation",
+                        "Discharge of contracts and remedies"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Law of Agency": {
+                    details: "Focus on agency relationships in real estate transactions.",
+                    subtopics: [
+                        "Agency relationships and creation",
+                        "Exclusive vs non-exclusive agency",
+                        "Agent's authorities",
+                        "Rights and duties between parties"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Landlord and Tenant Law": {
+                    details: "Study lease as an interest in land and landlord-tenant relationships.",
+                    subtopics: [
+                        "Dual relationship - privity of contract and estate",
+                        "Types of leases and tenancies",
+                        "Essential elements of a lease",
+                        "Rights and duties of landlords and tenants"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Review & Practice": {
+                    details: "Review contract law and agency concepts with practice questions.",
+                    subtopics: [
+                        "Review contract law principles",
+                        "Review agency relationships",
+                        "Practice MCQs on Unit 2 topics",
+                        "Clarify any doubts from the week"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 3
+            {
+                "Paper 1: Unit 2 - Ownership Interests": {
+                    details: "Study different forms of ownership interests in land.",
+                    subtopics: [
+                        "Mortgage as security",
+                        "Gift of property",
+                        "Trust in property",
+                        "Succession and inheritance"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Co-ownership & Restrictions": {
+                    details: "Focus on co-ownership forms and restrictions on capacity to hold land.",
+                    subtopics: [
+                        "Joint tenancy vs tenancy in common",
+                        "Restrictions on companies, societies, and partnerships",
+                        "Mental Capacity Act and LPA",
+                        "Residential Property Act restrictions"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Planning & Development": {
+                    details: "Study planning concepts and development control parameters.",
+                    subtopics: [
+                        "Master plan interpretation",
+                        "Zoning and plot ratio",
+                        "Development control on housing areas",
+                        "Change of use applications"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1: Unit 2 - Practice Case Studies": {
+                    details: "Apply knowledge to practice case studies for Paper 1.",
+                    subtopics: [
+                        "Case studies on land ownership",
+                        "Contract and agency scenarios",
+                        "Property restrictions examples",
+                        "Planning and development cases"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 1 - Comprehensive Review": {
+                    details: "Complete review of all Paper 1 topics and practice test.",
+                    subtopics: [
+                        "Review Units 1 and 2 key concepts",
+                        "Practice MCQs for both units",
+                        "Review challenging topics",
+                        "Simulate exam time conditions"
+                    ],
+                    duration: "3 hours"
+                }
+            },
+            // Week 4
+            {
+                "Paper 2: Unit 3 - Regulation of Industry I": {
+                    details: "Study the Estate Agents Act and regulations.",
+                    subtopics: [
+                        "Background of EAA 2010",
+                        "Principal functions of CEA",
+                        "Scope of estate agency work",
+                        "Licensing and registration requirements"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Regulation of Industry II": {
+                    details: "Continue with Estate Agents regulations and compliance.",
+                    subtopics: [
+                        "Estate Agents regulations",
+                        "Ban on dual representation",
+                        "Professional indemnity insurance",
+                        "Code of Practice for Estate Agents"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Code of Ethics": {
+                    details: "Focus on the Code of Ethics and Professional Client Care.",
+                    subtopics: [
+                        "General duty to clients and public",
+                        "Duty regarding agreements",
+                        "Duty regarding advertisements",
+                        "Avoiding conflicts of interest"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Role of Salespersons": {
+                    details: "Study the role, functions, and required knowledge of salespersons.",
+                    subtopics: [
+                        "Stages of sales/lease transactions",
+                        "Customer expectations",
+                        "Verification of property details",
+                        "Key legislation awareness"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Review & Practice": {
+                    details: "Review regulation topics and practice questions.",
+                    subtopics: [
+                        "Review EAA regulations",
+                        "Review Code of Ethics",
+                        "Practice MCQs on industry regulations",
+                        "Clarify any regulatory doubts"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 5
+            {
+                "Paper 2: Unit 3 - Real Estate Marketing": {
+                    details: "Study principles of real estate marketing and types of listing.",
+                    subtopics: [
+                        "Professional and ethical marketing",
+                        "Market segmentation",
+                        "Consumer buying behavior",
+                        "Types of listing arrangements"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Methods of Sale & Advertising": {
+                    details: "Focus on methods of sale and advertising regulations.",
+                    subtopics: [
+                        "Private treaty, auction, and tender",
+                        "Practice Guidelines on Ethical Advertising",
+                        "Compliance with authority guidelines",
+                        "Personal Data Protection Act"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Marketing Different Properties": {
+                    details: "Study marketing strategies for different property types.",
+                    subtopics: [
+                        "Marketing residential properties",
+                        "Marketing commercial properties",
+                        "Marketing industrial properties",
+                        "Marketing special properties"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Consumer Protection": {
+                    details: "Study the Consumer Protection (Fair Trading) Act in real estate.",
+                    subtopics: [
+                        "Types of transactions under the Act",
+                        "Unfair practices definition",
+                        "Consumer recourse options",
+                        "Time and claim limits"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 3 - Practice Case Studies": {
+                    details: "Apply knowledge to marketing and regulatory case studies.",
+                    subtopics: [
+                        "Ethical advertising scenarios",
+                        "Marketing strategy cases",
+                        "Regulatory compliance scenarios",
+                        "Consumer protection examples"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 6
+            {
+                "Paper 2: Unit 4 - Property Transactions I": {
+                    details: "Study sales of uncompleted private properties.",
+                    subtopics: [
+                        "Housing Developers Act provisions",
+                        "Sale and no-sale licenses",
+                        "Standard OTP and S&P agreements",
+                        "Remedies for breach"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Property Transactions II": {
+                    details: "Study sales of completed private properties.",
+                    subtopics: [
+                        "Caveat emptor and disclosure duties",
+                        "Sale procedures verification",
+                        "Contractual agreements",
+                        "Building Maintenance and Strata Management Act"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Collective Sales": {
+                    details: "Study collective sales of private properties.",
+                    subtopics: [
+                        "Land Titles (Strata) Act provisions",
+                        "Requisite consent levels",
+                        "Collective sale procedure",
+                        "Strata Titles Boards powers"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - HDB Flat Sales I": {
+                    details: "Study HDB policies and sale procedures.",
+                    subtopics: [
+                        "Public housing policies",
+                        "Housing options (rental, new, resale)",
+                        "Allocation policies and priority schemes",
+                        "Eligibility conditions for buyers"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - HDB Flat Sales II": {
+                    details: "Continue with HDB transaction procedures.",
+                    subtopics: [
+                        "Seller eligibility verification",
+                        "Ethnic Integration Policy",
+                        "Resale checklist and procedures",
+                        "HDB e-Services applications"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 7
+            {
+                "Paper 2: Unit 4 - Leasing Properties": {
+                    details: "Study leasing of private and HDB properties.",
+                    subtopics: [
+                        "URA regulations on residential leasing",
+                        "LOI and tenancy agreement terms",
+                        "HDB rental eligibility and rules",
+                        "Foreign worker housing requirements"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Taxes on Property": {
+                    details: "Study taxes related to property transactions.",
+                    subtopics: [
+                        "Stamp Duties Act provisions",
+                        "Buyer's, Additional Buyer's and Seller's Stamp Duty",
+                        "Property tax calculations",
+                        "GST on property transactions"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Property Finance I": {
+                    details: "Study financing for different property types.",
+                    subtopics: [
+                        "Sources of financing",
+                        "HDB loan requirements",
+                        "MAS restrictions on bank loans",
+                        "Loan-to-value limits"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Property Finance II": {
+                    details: "Continue with financial calculations for property transactions.",
+                    subtopics: [
+                        "CPF usage for property purchase",
+                        "Valuation and withdrawal limits",
+                        "Sale proceeds calculations",
+                        "Enhanced contra facility for HDB flats"
+                    ],
+                    duration: "2 hours"
+                }
+            },
+            {
+                "Paper 2: Unit 4 - Practice Case Studies": {
+                    details: "Apply knowledge to property transaction case studies.",
+                    subtopics: [
+                        "Private property transaction scenarios",
+                        "HDB transaction cases",
+                        "Leasing and tax calculation cases",
+                        "Financing calculation examples"
+                    ],
+                    duration: "2-3 hours"
+                }
+            },
+            // Week 8
+            {
+                "Paper 1: Comprehensive Review": {
+                    details: "Final review of all Paper 1 topics with practice test.",
+                    subtopics: [
+                        "Review Unit 1 key concepts",
+                        "Review Unit 2 key concepts",
+                        "Complete full Paper 1 practice test",
+                        "Review answers and address weaknesses"
+                    ],
+                    duration: "3 hours"
+                }
+            },
+            {
+                "Paper 2: Comprehensive Review": {
+                    details: "Final review of all Paper 2 topics with practice test.",
+                    subtopics: [
+                        "Review Unit 3 key concepts",
+                        "Review Unit 4 key concepts",
+                        "Complete full Paper 2 practice test",
+                        "Review answers and address weaknesses"
+                    ],
+                    duration: "3 hours"
+                }
+            },
+            {
+                "Final Review: Practice MCQs": {
+                    details: "Practice multiple choice questions for both papers.",
+                    subtopics: [
+                        "Complete timed MCQ practice sets",
+                        "Review incorrect answers",
+                        "Focus on frequently tested concepts",
+                        "Practice time management"
+                    ],
+                    duration: "3 hours"
+                }
+            },
+            {
+                "Final Review: Case Studies": {
+                    details: "Practice case study questions for both papers.",
+                    subtopics: [
+                        "Complete timed case study practice sets",
+                        "Review problem-solving approach",
+                        "Apply knowledge to complex scenarios",
+                        "Practice exam techniques"
+                    ],
+                    duration: "3 hours"
+                }
+            },
+            {
+                "Final Preparation": {
+                    details: "Last-minute review and exam strategy.",
+                    subtopics: [
+                        "Review most challenging concepts",
+                        "Review formulas and calculations",
+                        "Plan exam day strategy",
+                        "Rest and prepare mentally"
+                    ],
+                    duration: "2-3 hours"
+                }
+            }
+        ];
+        
+        // Generate calendar
+        generateCalendar();
+        
+        // Event Listeners
+        document.getElementById('change-date-btn').addEventListener('click', function() {
+            const datePicker = document.getElementById('date-picker');
+            datePicker.style.display = datePicker.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        document.getElementById('apply-date-btn').addEventListener('click', function() {
+            const newDateInput = document.getElementById('new-date-input').value;
+            if (newDateInput) {
+                startDate = new Date(newDateInput);
+                endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + 2);
+                
+                document.getElementById('start-date').textContent = formatDate(startDate, 'long');
+                document.getElementById('end-date').textContent = formatDate(endDate, 'long');
+                
+                document.getElementById('date-picker').style.display = 'none';
+                
+                // Save the new dates to localStorage
+                saveDates();
+                
+                // Regenerate calendar with new dates
+                generateCalendar();
+            }
+        });
+        
+        document.getElementById('modal-close').addEventListener('click', function() {
+            document.getElementById('detail-modal').style.display = 'none';
+        });
+        
+        document.getElementById('modal-close-btn').addEventListener('click', function() {
+            document.getElementById('detail-modal').style.display = 'none';
+        });
+        
+        // Functions
+        function generateCalendar() {
+            const calendarContainer = document.getElementById('calendar-container');
+            calendarContainer.innerHTML = '';
+            
+            const calendar = createCalendarArray();
+            const calendarByMonth = groupByMonth(calendar);
+            
+            // Generate calendar UI
+            Object.entries(calendarByMonth).forEach(([monthYear, entries]) => {
+                const monthSection = document.createElement('div');
+                monthSection.className = 'month-section';
+                
+                const monthTitle = document.createElement('h2');
+                monthTitle.className = 'month-title';
+                monthTitle.textContent = monthYear;
+                monthSection.appendChild(monthTitle);
+                
+                entries.forEach(entry => {
+                    const studyDay = document.createElement('div');
+                    studyDay.className = 'study-day';
+                    studyDay.setAttribute('data-date', formatDate(entry.date));
+                    studyDay.setAttribute('data-topic', entry.topic);
+                    studyDay.setAttribute('data-details', entry.details.details);
+                    studyDay.setAttribute('data-duration', entry.details.duration);
+                    studyDay.setAttribute('data-subtopics', JSON.stringify(entry.details.subtopics));
+                    
+                    studyDay.innerHTML = `
+                        <div class="info-row">
+                            <input type="checkbox" class="completed-checkbox" data-id="${formatDate(entry.date)}-${encodeURIComponent(entry.topic)}" ${isTopicCompleted(entry.date, entry.topic) ? 'checked' : ''}>
+                            <div class="date-badge">${formatDate(entry.date, 'short')}</div>
+                            <div class="topic-info">
+                                <h3>${entry.topic} ${isTopicCompleted(entry.date, entry.topic) ? '<span class="completed-badge">Completed</span>' : ''}</h3>
+                                <p>${entry.details.duration}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    `;
+                    
+                    if (isTopicCompleted(entry.date, entry.topic)) {
+                        studyDay.classList.add('completed-topic');
+                    }
+                    
+                    studyDay.addEventListener('click', function(e) {
+                        if (e.target.type === 'checkbox') {
+                            e.stopPropagation();
+                            handleTopicCompletion(e.target, entry.date, entry.topic);
+                        } else {
+                            showModal(this);
+                        }
+                    });
+                    
+                    const checkbox = studyDay.querySelector('.completed-checkbox');
+                    checkbox.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        handleTopicCompletion(this, entry.date, entry.topic);
+                    });
+                    
+                    monthSection.appendChild(studyDay);
+                });
+                
+                calendarContainer.appendChild(monthSection);
+            });
+        }
+        
+        function createCalendarArray() {
+            let calendar = [];
+            let currentDate = new Date(startDate);
+            let studyIndex = 0;
+            
+            while (currentDate <= endDate) {
+                // Skip weekends (0 = Sunday, 6 = Saturday)
+                const dayOfWeek = currentDate.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    // Assign study topic if available
+                    const studyTopic = studyIndex < studySchedule.length ? 
+                                    Object.entries(studySchedule[studyIndex])[0] : 
+                                    ["Review Day", { details: "General review of previous topics", subtopics: ["Review previous material", "Practice questions", "Clarify doubts"], duration: "2 hours" }];
+                    
+                    calendar.push({
+                        date: new Date(currentDate),
+                        topic: studyTopic[0],
+                        details: studyTopic[1]
+                    });
+                    
+                    studyIndex++;
+                }
+                
+                // Move to next day
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            return calendar;
+        }
+        
+        function groupByMonth(calendar) {
+            const months = {};
+            
+            calendar.forEach(entry => {
+                const date = entry.date;
+                const monthYear = formatDate(date, 'month');
+                
+                if (!months[monthYear]) {
+                    months[monthYear] = [];
+                }
+                
+                months[monthYear].push(entry);
+            });
+            
+            return months;
+        }
+        
+        function formatDate(date, format = 'full') {
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            
+            if (format === 'full') {
+                return date.toLocaleDateString('en-US', options);
+            } else if (format === 'long') {
+                return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            } else if (format === 'short') {
+                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            } else if (format === 'month') {
+                return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            }
+            
+            return date.toLocaleDateString();
+        }
+        
+        function formatDateISO(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}`;
+        }
+        
+        function showModal(element) {
+            const date = element.getAttribute('data-date');
+            const topic = element.getAttribute('data-topic');
+            const details = element.getAttribute('data-details');
+            const duration = element.getAttribute('data-duration');
+            const subtopics = JSON.parse(element.getAttribute('data-subtopics'));
+            
+            document.getElementById('modal-date').textContent = date;
+            document.getElementById('modal-topic').textContent = topic;
+            document.getElementById('modal-details').textContent = details;
+            document.getElementById('modal-duration').textContent = `Estimated Duration: ${duration}`;
+            
+            const subtopicsList = document.getElementById('modal-subtopics');
+            subtopicsList.innerHTML = '';
+            
+            subtopics.forEach(subtopic => {
+                const li = document.createElement('li');
+                li.textContent = subtopic;
+                subtopicsList.appendChild(li);
+            });
+            
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+        
+        // Topic completion functions
+        function getCompletedTopics() {
+            const savedTopics = localStorage.getItem('resExamCompletedTopics');
+            return savedTopics ? JSON.parse(savedTopics) : [];
+        }
+        
+        function saveCompletedTopics(topics) {
+            localStorage.setItem('resExamCompletedTopics', JSON.stringify(topics));
+        }
+        
+        function isTopicCompleted(date, topic) {
+            const completedTopics = getCompletedTopics();
+            const topicId = `${formatDate(date)}-${topic}`;
+            return completedTopics.includes(topicId);
+        }
+        
+        function handleTopicCompletion(checkbox, date, topic) {
+            const topicId = `${formatDate(date)}-${topic}`;
+            const completedTopics = getCompletedTopics();
+            const studyDay = checkbox.closest('.study-day');
+            const completedBadge = studyDay.querySelector('.topic-info h3 .completed-badge');
+            
+            if (checkbox.checked) {
+                if (!completedTopics.includes(topicId)) {
+                    completedTopics.push(topicId);
+                }
+                studyDay.classList.add('completed-topic');
+                if (!completedBadge) {
+                    const topicTitle = studyDay.querySelector('.topic-info h3');
+                    topicTitle.innerHTML = `${topic} <span class="completed-badge">Completed</span>`;
+                }
+            } else {
+                const index = completedTopics.indexOf(topicId);
+                if (index > -1) {
+                    completedTopics.splice(index, 1);
+                }
+                studyDay.classList.remove('completed-topic');
+                if (completedBadge) {
+                    completedBadge.remove();
+                    const topicTitle = studyDay.querySelector('.topic-info h3');
+                    topicTitle.textContent = topic;
+                }
+            }
+            
+            saveCompletedTopics(completedTopics);
+        }
+    </script>
+</body>
+</html>
